@@ -1,0 +1,23 @@
+{
+  "name": "comment-section",
+  "version": "1.0.0",
+  "description": "Login page, CRUD for comments",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aashishchachan/comment-section.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aashishchachan/comment-section/issues"
+  },
+  "homepage": "https://github.com/aashishchachan/comment-section#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1"
+  }
+}
