@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema= mongoose.Schema;
-const UserData = require('/UserData')
+const UserData = require('./userdata')
 
 const Comments= new Schema({
     user_id: {

@@ -17,8 +17,8 @@ app.use(express.urlencoded( {extended: true}));  // now req.body will have all t
 app.use(express.json())  //
 
 const mongoose = require('mongoose');
-const UserData= require('./models/UserData');
-const Comments = require('./models/Comments')
+const UserData= require('./models/userdata');
+const Comments = require('./models/comments')
 const { MongoServerSelectionError } = require('mongodb');
 
 const sessionconfig = {
@@ -35,14 +35,14 @@ const sessionconfig = {
 }
 app.use(session(sessionconfig))
 app.use(flash())
-app.use(passport.initialize());
-app.use(passport.session())
+// app.use(passport.initialize());
+// app.use(passport.session())
 app.use(cookieParser());
 
-const user;
-const comments;
+//var user={};
+//var comments={};
 
-mongoose.connect('mongodb://localhost:27017/comments', { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false, })
+mongoose.connect('mongodb://localhost:27017/db1', { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false, })
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, 'Connection error:'))
 db.once("open", function () {
@@ -59,13 +59,48 @@ app.get('/', (req, res)=>{
     res.render('index.ejs');
 })
 
-app.post('/login', (req, res)=>{
-    comments = Comments.find({});   
-    const {username, email, password} = req.body;
-    if (username==="" || password==="") req.flash('error',"username or password can't be empty");res.redirect('/login')  
-    user = await UserData.find({username: username})
-                    .catch(()=>{const data = new UserData({username, email, password}); data.save();})
-    res.render('comments.ejs', {user, comments});
+app.get('/login', (req, res)=>{
+    res.render('index.ejs');
 })
 
-app.post('allcomments')
+app.post('/login', async (req, res)=>{   
+    const {username, password} = req.body;
+    if (username===""  || password==="") {req.flash('error',"username or password can't be empty");res.redirect('/login') } 
+    await UserData.findOne({username: username})
+                    .then((dat)=>{console.log(dat); user =dat})
+                    .catch((err)=> console.log(err));
+    if(user){
+        data=user;
+    }
+    else{
+        data = new UserData({username, comments: []}); 
+        data.save()
+            .then(console.log('created')) 
+            .catch((err)=>console.log(err));
+    }
+        res.render('mycomments.ejs', {data});
+})
+
+app.post('/allcomments', async (req, res)=>{
+    await Comments.find({}).then((dat)=>user=dat);
+    res.render('/allcomments.ejs', {user})
+})
+
+app.post('./newcomment', async (req, res)=>{
+    const {username, comment} =req.body;
+    await UserData.findOne({username}).then((dat)=>{dataU=dat; user=dat.comments});
+    user.push(comment);
+    await UserData.findOneAndUpdate({username}, {comments:user}).then(()=>console.log('done'));
+    await Comments.InsertOne({username, comment}).then((dat)=>console.log(dat));
+    res.render('/mycomments', {data});
+})
+
+app.post('/delete', async(req, res)=>{
+    const {ind, username} = req.body;
+    await UserData.findOne({username}).then((dat)=>{data=dat; user=dat.comments});
+    comment=user[ind];
+    user.splice(ind, 1);
+    await UserData.findOneAndUpdate({username}, {comments:user}).then(()=>console.log('done'));
+    await Comments.deleteOne({username, comment}).then((dat)=>console.log(dat));
+    res.render('/mycomments', {data});
+})

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comment Section</title>
+    </head>
+    <body>
+       <h2> Welcome <%= data.username %>!</h2> 
+        <h3> <a href="/allcomments" method="post" > All Comments </a></h3>
+        <h3> <a href="/mycomments" method="post"> <u> My Comments </u> </a> </h3>
+        
+        <form action="/newcomment" method ="post"> 
+            <input type="text" name="comment">
+            <input type="submit" value=<%= user.username %> name="username"><button type="submit"><h4>Add Comment</h4></button>
+        </form>
+        <% for (let i=0; i< user.comments.length; i++ ){ %>
+            <h4><p> <%= user.comments[i] %></p> 
+            <form action="/delete" method="post">
+            <input type="submit" value=<%= i %> name='ind'>
+            <input type="submit" value=<%= data.username %> name='username'>
+            <button type="submit">Delete</button></a> </h4> <br>
+        <% } %>
+
+    </body>
+</html>

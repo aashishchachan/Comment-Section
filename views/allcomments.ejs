@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comment Section</title>
+    </head>
+    <body>
+       <h2> Welcome <%= data.username %>!</h2> 
+        <h3> <a href="/allcomments" method="post" > <u> All Comments </u></a></h3>
+        <h3> <a href="/mycomments" method="post"> My Comments  </a> </h3>
+        
+        <% for (let data in user ){ %>
+            <h4> <b><%= user.username %></b>
+            <h4> <p><%= user.comment %></p> 
+        <% } %>
+    </body>
+</html>
