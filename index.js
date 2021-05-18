@@ -98,11 +98,12 @@ app.post('/:_id/newcomment', async (req, res)=>{
     const {comment} =req.body;
     const id = req.params._id;
     await UserData.findById(id).then((data)=>{user=data});
-    user.comments.push(comment);
+    if(comment==="") {res.render('mycomments.ejs', {user});}
+    else {user.comments.push(comment);
     await UserData.findByIdAndUpdate(id, {comments:user.comments}, {new:true}).then((data)=>{user=data});
     const cmnt = new Comments ({username: user.username, comment})
     cmnt.save();
-    res.render('mycomments.ejs', {user});
+    res.render('mycomments.ejs', {user});}
 })
 
 app.post('/:_id/:ind/delete', async(req, res)=>{
