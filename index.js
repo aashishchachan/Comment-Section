@@ -78,29 +78,39 @@ app.post('/login', async (req, res)=>{
             .then(console.log('created')) 
             .catch((err)=>console.log(err));
     }
-        res.render('mycomments.ejs', {data});
+        res.redirect( 307, `${data._id}/mycomments`);
 })
 
-app.post('/allcomments', async (req, res)=>{
-    await Comments.find({}).then((dat)=>user=dat);
-    res.render('/allcomments.ejs', {user})
+app.post('/:_id/allcomments', async (req, res)=>{
+    id=req.params._id;
+    await Comments.find({}).then((data)=>{comments=data});
+    await UserData.findById(id).then((data)=>{user=data});
+    res.render('allcomments.ejs', {user, comments})
 })
 
-app.post('./newcomment', async (req, res)=>{
-    const {username, comment} =req.body;
-    await UserData.findOne({username}).then((dat)=>{dataU=dat; user=dat.comments});
-    user.push(comment);
-    await UserData.findOneAndUpdate({username}, {comments:user}).then(()=>console.log('done'));
-    await Comments.InsertOne({username, comment}).then((dat)=>console.log(dat));
-    res.render('/mycomments', {data});
+app.post('/:_id/mycomments', async (req, res)=>{
+    id=req.params._id;
+    await UserData.findById(id).then((data)=>{user=data});
+    res.render('mycomments.ejs', {user})
 })
 
-app.post('/delete', async(req, res)=>{
-    const {ind, username} = req.body;
-    await UserData.findOne({username}).then((dat)=>{data=dat; user=dat.comments});
-    comment=user[ind];
-    user.splice(ind, 1);
-    await UserData.findOneAndUpdate({username}, {comments:user}).then(()=>console.log('done'));
-    await Comments.deleteOne({username, comment}).then((dat)=>console.log(dat));
-    res.render('/mycomments', {data});
+app.post('/:_id/newcomment', async (req, res)=>{
+    const {comment} =req.body;
+    const id = req.params._id;
+    await UserData.findById(id).then((data)=>{user=data});
+    user.comments.push(comment);
+    await UserData.findByIdAndUpdate(id, {comments:user.comments}, {new:true}).then((data)=>{user=data});
+    const cmnt = new Comments ({username: user.username, comment})
+    cmnt.save();
+    res.render('mycomments.ejs', {user});
+})
+
+app.post('/:_id/:ind/delete', async(req, res)=>{
+    const {id:_id, ind} = req.params;
+    await UserData.findById(id).then((data)=>{user=data});
+    comment=user.comments[ind];
+    user.comments.splice(ind, 1);
+    await UserData.findByIdAndUpdate(id, {comments:user.comments}, {new:true}).then((data)=>{user=data});
+    await Comments.deleteOne({username: user.username, comment});
+    res.render('mycomments.ejs', {user});
 })

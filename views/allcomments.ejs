@@ -3,14 +3,16 @@
     <head>
         <title>Comment Section</title>
     </head>
-    <body>
-       <h2> Welcome <%= data.username %>!</h2> 
-        <h3> <a href="/allcomments" method="post" > <u> All Comments </u></a></h3>
-        <h3> <a href="/mycomments" method="post"> My Comments  </a> </h3>
-        
-        <% for (let data in user ){ %>
-            <h4> <b><%= user.username %></b>
-            <h4> <p><%= user.comment %></p> 
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+        <h2 style="text-align: center;"> Welcome <%= user.username %>!</h2> 
+        <div>
+         <h3 style="text-align: center;"> <form action="/<%= user._id %>/allcomments" method="post"> <button type="submit"> <u> All Comments </u></button></form>
+         <form action="/<%= user._id %>/mycomments" method="post"> <button type="submit"> My Comments</button> </a> </h3></form>
+     </div>
+        <% for (let i in comments ){ %>
+            <h3><p><%= comments[i].username %> 
+               <br> <%= comments[i].comment %></p> 
         <% } %>
+
     </body>
 </html>
